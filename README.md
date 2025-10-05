@@ -78,13 +78,13 @@ Navigate to your "reactui" terminal. Run `npm start`. The app will run at `http:
 #### Expected Output:
 <img width="1405" height="1046" alt="Screenshot 2025-10-04 at 9 24 55 PM" src="https://github.com/user-attachments/assets/3b5b3b23-e9f4-4c49-85d6-930d3f6bb1c0" />
 
-### Performing CRUD Operations
+### 6. Performing CRUD Operations
 
 Enter an item's name and select its quantity. After you hit `add` you should see the item and the quantity displayed. If you'd like to edit the item, hit `edit`. You will then be able to edit the name and quantity of the item. To remove an item from the list, hit `delete`.
 
 <img width="1793" height="1053" alt="Screenshot 2025-10-04 at 8 22 52 PM" src="https://github.com/user-attachments/assets/5980bbce-27d9-435f-bed8-1cbb15c23f80" />
 
-### Clean Up
+### 7. Clean Up
 
 Follow these steps when you're done using the application:
 
