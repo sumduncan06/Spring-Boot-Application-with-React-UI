@@ -4,7 +4,7 @@ This repository contains a Spring Boot microservice with a RESTful CRUD API and 
 
 ## What Does This App Do?
 
-This Shopping List application utlizes a Spring Boot microservice with a RESTful API and a React Frontend UI to perform CRUD Applications. Users will be able to name and select its quantity before adding it to the list. The list of items will be displayed on the page and users will be able to update items in the list or delete items entirely from the list.
+This Shopping List application utlizes a Spring Boot microservice with a RESTful API and a React Frontend UI to perform CRUD operations. Users will be able to enter an item's name and select its quantity before adding it to the list. The list of items will be displayed on the page and users will be able to update items in the list or delete items entirely from the list.
 
 ## Prerequisites
 
@@ -16,26 +16,32 @@ This Shopping List application utlizes a Spring Boot microservice with a RESTful
   
 ## How to Build and Run this Application
 
-### 1. Download the React UI, SpringBootProject, and K8s folders.
+### 1. Clone the Repository.
+
+Use the command `git clone https://github.com/sumduncan06/spring-boot-application-with-react-ui` to clone the repo. cd into `spring-boot-application-with-react-ui` and make sure you see the following folders:
+
+- SpringBootProject
+- K8s
+- reactui
+- screenshots
 
 These folders should contain:
 
 - (K8s) 4 Yaml Files
 - (REACT UI) APP.js along with nginx files, and json files
 - (SPRING BOOT PROJECT) gradle and java files located in src
+- (screenshots) screenshots of the reactui
 
 ### 2. Build the Spring Boot Container
 Open terminal and navigate to the "springbootproject" folder. 
 
-Now build a container image using the following command: ```docker build -t <your-user-dockerhub-name>/spring-backend:1.0.0 .```
+Now build a container image using the following command: ```docker build -t <your-dockerhub-username>/spring-backend:1.0.0 .```
 
 Hit enter and let the image build.
 
 Now, push the image to dockerhub using the following command: `docker push <your-dockerhub-username>/spring-backend:1.0.0`
 
 Next, build the project. Run `./gradlew clean build`
-
-You have now successfully built your spring boot container.
 
 ### 3. Build the REACT UI container
 
@@ -49,12 +55,11 @@ Build the image with: `docker build -t <your-dockerhub-username>/react-frontend:
 
 Push the image to dockerhub with `docker push <your-dockerhub-username>/react-frontend:v1.0.0`
 
-You have now successfully built your reactui container and set the application up for execution.
-
 ### 4. Kubernetes Deployment
 
-Now navigate to the K8s folder. In the "react-deployment.yaml" file under image, change "sumduncan06/my-spring-app:v1.0.1" to your image name. You can find your specific image under `docker images` if you get stuck. Changing this ensure that the kubernetes will pull from your image. Do the same for the "spring-deployment.yaml" file as well.
-
+Now navigate to the K8s folder. In the "react-deployment.yaml" file under image, change the image: field to your docker reactui image. You can find your specific image under `docker images` if you get stuck. Changing this ensure that the kubernetes will pull from your image. In "spring-deployment.yaml", change the image field to your docker springboot image
+ as well.
+ 
 <img width="920" height="601" alt="Screenshot 2025-10-04 at 8 47 48 PM" src="https://github.com/user-attachments/assets/ac8f09b1-6531-4bc4-ac4b-65ca24ff48c0" />
 
 Now deploy the kubernetes. Run the following commands in your K8 terminal:
