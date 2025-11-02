@@ -1,115 +1,236 @@
-# Spring-Boot-Application-with-React-UI
+# Shopping List Spring Boot Application with React UI
 
-This repository contains a Spring Boot microservice with a RESTful CRUD API and a React frontend UI, deployed on a local Kubernetes cluster using Docker Desktop.
+This repository contains a Spring Boot microservice with RESTful APIs and a React frontend UI.
 
 ## What Does This App Do?
 
-This Shopping List application utlizes a Spring Boot microservice with a RESTful API and a React Frontend UI to perform CRUD operations. Users will be able to enter an item's name and select its quantity before adding it to the list. The list of items will be displayed on the page and users will be able to update items in the list or delete items entirely from the list.
+This application is a shopping list manager with microservice features:
+
+- **Shopping List CRUD**: add, ,view, update, and delete shopping items with quantities
+- **Configuration Endpoint (`/config`)**: Displays environment variables and ConfigMap data
+- **Fibonacci Generator (`/fib`)**: Generates Fibonacci sequences of specified length (1, 10, etc..)
+- **Swagger UI**: Interactive API documentation
 
 ## Prerequisites
 
-- Docker Desktop with Kubernetes enabled. 2 KIND clusters are required for this application.
-- Node.js and npm installed.
-- Java 21 (for Spring Boot).
-- Gradle installed.
-- kubectl installed and configured.
-  
-## How to Build and Run this Application
+- Docker Desktop with Kubernetes enabled
+- Node.js and npm installed
+- Java 21 (for Spring Boot)
+- Gradle installed
+- kubectl installed and configured
+- DockerHub account
 
-### 1. Clone the Repository.
+## Repository Structure
+```
+spring-boot-application-with-react-ui/
+├── SpringBootProject/       # Spring Boot backend
+│   ├── src/
+│   ├── build.gradle
+│   └── Dockerfile
+├── reactui/                 # React frontend
+│   ├── src/
+│   ├── public/
+│   ├── nginx.conf
+│   ├── Dockerfile
+│   └── package.json
+├── k8s/                     # Kubernetes manifests
+│   ├── spring-deployment.yaml
+│   ├── spring-service.yaml
+│   ├── react-deployment.yaml
+│   ├── react-service.yaml
+│   └── configmap.yaml
+└── screenshots/
+```
 
-Use the command `git clone https://github.com/sumduncan06/spring-boot-application-with-react-ui` to clone the repo. cd into `spring-boot-application-with-react-ui` and make sure you see the following folders:
+## How to Build and Run This Application
 
-- SpringBootProject
-- K8s
-- reactui
-- screenshots
-
-These folders should contain:
-
-- (K8s) 4 Yaml Files
-- (REACT UI) APP.js along with nginx files, and json files
-- (SPRING BOOT PROJECT) gradle and java files located in src
-- (screenshots) screenshots of the reactui
+### 1. Clone the Repository
+```bash
+git clone https://github.com/sumduncan06/spring-boot-application-with-react-ui
+cd spring-boot-application-with-react-ui
+```
 
 ### 2. Build the Spring Boot Container
-Open terminal and navigate to the "springbootproject" folder. 
 
-Now build a container image using the following command: ```docker build -t <your-dockerhub-username>/spring-backend:1.0.0 .```
+Navigate to the Spring Boot project directory:
+```bash
+cd SpringBootProject
+```
 
-Hit enter and let the image build.
+Build the project with Gradle:
+```bash
+./gradlew clean build
+```
 
-Now, push the image to dockerhub using the following command: `docker push <your-dockerhub-username>/spring-backend:1.0.0`
+Build the Docker image (use your own DockerHub username):
+```bash
+docker build -t <your-dockerhub-username>/spring-backend:v4.1.2 .
+```
 
-Next, build the project. Run `./gradlew clean build`
+Push to DockerHub:
+```bash
+docker push <your-dockerhub-username>/spring-backend:v4.1.2
+```
 
-### 3. Build the REACT UI container
+### 3. Build the React UI Container
 
-Open a new terminal window and navigate to the "reactui" folder.
+Navigate to the React UI directory:
+```bash
+cd ../reactui
+```
 
-Install dependencies with `npm install`
+Install dependencies:
+```bash
+npm install
+```
 
-Run build using `npm run build`
+Build the React app for production:
+```bash
+npm run build
+```
 
-Build the image with: `docker build -t <your-dockerhub-username>/react-frontend:v1.0.0 .`
+Build the Docker image:
+```bash
+docker build -t <your-dockerhub-username>/react-frontend:v4.1.2 .
+```
 
-Push the image to dockerhub with `docker push <your-dockerhub-username>/react-frontend:v1.0.0`
+Push to DockerHub:
+```bash
+docker push <your-dockerhub-username>/react-frontend:v4.1.2
+```
 
-### 4. Kubernetes Deployment
+### 4. Update Kubernetes Manifests
 
-Now navigate to the K8s folder. In the "react-deployment.yaml" file under image, change the image: field to your docker reactui image. You can find your specific image under `docker images` if you get stuck. Changing this ensure that the kubernetes will pull from your image. In "spring-deployment.yaml", change the image field to your docker springboot image
- as well.
- 
-<img width="920" height="601" alt="Screenshot 2025-10-04 at 8 47 48 PM" src="https://github.com/user-attachments/assets/ac8f09b1-6531-4bc4-ac4b-65ca24ff48c0" />
+Navigate to the k8s directory:
+```bash
+cd ../k8s
+```
 
-Now deploy the kubernetes. Run the following commands in your K8 terminal:
+**IMPORTANT:** Update the image names in the deployment files to match your DockerHub username:
 
-`kubectl apply -f spring-deployment.yaml`
+In `spring-deployment.yaml`:
+```yaml
+image: <your-dockerhub-username>/spring-backend:v4.1.2
+```
 
-`kubectl apply -f spring-service.yaml`
+In `react-deployment.yaml`:
+```yaml
+image: <your-dockerhub-username>/react-frontend:v4.1.2
+```
 
-`kubectl apply -f react-deployment.yaml`
+### 5. Deploy to Kubernetes
 
-`kubectl apply -f react-service.yaml`
+Apply all Kubernetes manifests:
+```bash
+kubectl apply -f configmap.yaml
+kubectl apply -f spring-deployment.yaml
+kubectl apply -f spring-service.yaml
+kubectl apply -f react-deployment.yaml
+kubectl apply -f react-service.yaml
+```
 
-Run `kubectl get all` to make sure you have 4 pods total.
+Verify deployment:
+```bash
+kubectl get services,deployments,pods,configmaps
+```
 
-### 5. Access REACTUI & Run the front/backend applications
+You should see:
+- 3 Spring Boot pods (Running)
+- 2 React pods (Running)
+- spring-service (ClusterIP)
+- react-service (NodePort)
+- microservice-config ConfigMap
 
-Navigate back to your "springbootcontainer" terminal. Run `./gradlew clean bootRun`
+### 6. Access the Application
 
-Navigate to your "reactui" terminal. Run `npm start`. The app will run at `http://localhost:3000` in your browser.
+#### Option 1: NodePort
+Open your browser to:
+```
+http://localhost:30000
+```
 
-#### Expected Output:
-<img width="1405" height="1046" alt="Screenshot 2025-10-04 at 9 24 55 PM" src="https://github.com/user-attachments/assets/3b5b3b23-e9f4-4c49-85d6-930d3f6bb1c0" />
+#### Port Forwarding (If NodePort doesn't work)
+If the NodePort doesn't work, use port forwarding:
+```bash
+kubectl port-forward service/react-service 3000:80
+```
 
-### 6. Performing CRUD Operations
+Then access at:
+```
+http://localhost:3000
+```
 
-Enter an item's name and select its quantity. After you hit `add` you should see the item and the quantity displayed. If you'd like to edit the item, hit `edit`. You will then be able to edit the name and quantity of the item. To remove an item from the list, hit `delete`.
+**Note:** Keep the port-forward terminal window open while using the app.
 
-<img width="1793" height="1053" alt="Screenshot 2025-10-04 at 8 22 52 PM" src="https://github.com/user-attachments/assets/5980bbce-27d9-435f-bed8-1cbb15c23f80" />
+### 7. Using the Application
 
-### 7. Clean Up
+#### Shopping List CRUD Operations
+1. Enter an item name and quantity
+2. Click "Add" to add the item
+3. Click "Edit" to modify an existing item
+4. Click "Delete" to remove an item
 
-Follow these steps when you're done using the application:
+#### Configuration Data
+1. Click "Load Config" to view environment variables
+2. Look for `DATA_MICROSERVICE: MyOtherMicroservice` in the output
 
-In a new terminal run `docker ps` to find running containers. 
+#### Fibonacci Sequence
+1. Enter a number (e.g., 10) for the sequence length
+2. Click "Generate" to see the Fibonacci sequence
 
-Find the ids of the ones you want to remove, then run `docker stop (container id)`. 
+#### Swagger UI
+To access the Swagger API documentation:
+```bash
+kubectl port-forward service/spring-service 8080:8080
+```
 
-Now run `docker rm (container id)` to remove the containers from your machine.
+Then open:
+```
+http://localhost:8080/swagger-ui/index.html
+```
 
-You can delete all your kubernetes manifests by running the following commands:
-   
-`kubectl delete -f k8s/spring-deployment.yaml`
+### 8. Viewing Logs
 
-`kubectl delete -f k8s/spring-service.yaml`
+To view the logs for config endpoint calls:
+```bash
+# Get pod names
+kubectl get pods
 
-`kubectl delete -f k8s/react-deployment.yaml`
+# View logs for a specific Spring pod
+kubectl logs <spring-pod-name>
+```
+### 9. Clean Up
 
-`kubectl delete -f k8s/react-service.yaml`
+Delete all Kubernetes resources:
+```bash
+kubectl delete -f k8s/configmap.yaml
+kubectl delete -f k8s/spring-deployment.yaml
+kubectl delete -f k8s/spring-service.yaml
+kubectl delete -f k8s/react-deployment.yaml
+kubectl delete -f k8s/react-service.yaml
+```
 
-Finally, close all terminals and remove all folders from your machine.
+Or delete all at once:
+```bash
+kubectl delete -f k8s/
+```
+
+Verify deletion:
+```bash
+kubectl get all
+```
+
+## Screenshots
+
+### Restful Commands in Action:
+<img width="1334" height="359" alt="Screenshot 2025-11-02 at 2 37 37 PM" src="https://github.com/user-attachments/assets/73714fb1-9df6-4842-813b-961bf32cb246" />
 
 
- 
+### Fibonacci in Action
+<img width="1322" height="152" alt="Screenshot 2025-11-02 at 2 37 04 PM" src="https://github.com/user-attachments/assets/f90f4364-0ad8-43d5-924a-49b21885e35d" />
+
+
+### Config Data in Action
+<img width="1336" height="329" alt="Screenshot 2025-11-02 at 2 36 59 PM" src="https://github.com/user-attachments/assets/0fb02336-f510-4b3e-b665-8608ddb4deb2" />
+
+
