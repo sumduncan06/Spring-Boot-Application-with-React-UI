@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
         - name: react-container
-          image: sumduncan06/react-frontend:1.0.3
+          image: sumduncan06/react-frontend:v4.1.2
           ports:
             - containerPort: 80

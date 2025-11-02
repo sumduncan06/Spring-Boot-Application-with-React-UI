@@ -5,7 +5,7 @@ metadata:
   labels:
     app: spring-app
 spec:
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
       app: spring-app
@@ -16,6 +16,9 @@ spec:
     spec:
       containers:
         - name: spring-container
-          image: sumduncan06/my-spring-app:v1.0.1
+          image: sumduncan06/spring-backend:v4.1.2
           ports:
             - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: microservice-config
