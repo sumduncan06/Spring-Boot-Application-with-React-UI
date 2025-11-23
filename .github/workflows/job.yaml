@@ -10,52 +10,43 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout the repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2️⃣ Set up JDK 21 for Spring Boot
       - name: Set up JDK 21
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '21'
 
-      # 3️⃣ Build Spring Boot project with Gradle
       - name: Build Spring Boot project
         run: |
           cd SpringBootProject
           ./gradlew clean build
 
-      # 4️⃣ Build Docker image for Spring Boot
       - name: Build Docker image
         run: |
           cd SpringBootProject
           docker build -t spring-backend-test .
 
-      # 5️⃣ Run Docker container in background
       - name: Run Spring Boot container
         run: |
           docker run -d -p 8080:8080 --name spring-test spring-backend-test
 
-      # 6️⃣ Wait for Spring Boot to start dynamically
-      - name: Wait for Spring Boot to start
+      - name: Test /fib endpoint
         run: |
           for i in {1..30}; do
-            if curl -s http://localhost:8080/fib?length=10 > /dev/null; then
-              echo "Spring Boot is up!"
-              break
+            result=$(curl -s http://localhost:8080/fib?length=10)
+            if [[ "$result" == *0* ]]; then
+              echo "✅ Fibonacci result: $result"
+              exit 0
             fi
             echo "Waiting for Spring Boot..."
             sleep 1
           done
+          echo "❌ Fibonacci test failed: /fib did not return expected result"
+          exit 1
 
-      # 7️⃣ Test /fib endpoint
-      - name: Test /fib endpoint
-        run: |
-          curl -s http://localhost:8080/fib?length=10 | grep 0
-
-      # 8️⃣ Stop the container
       - name: Stop container
         run: |
           docker stop spring-test
