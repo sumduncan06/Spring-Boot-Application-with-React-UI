@@ -1,4 +1,5 @@
-FROM openjdk:21-jdk-slim
+FROM eclipse-temurin:21-jdk
+
 WORKDIR /app
 
 COPY build/libs/SpringBootProject-0.0.1-SNAPSHOT.jar app.jar
