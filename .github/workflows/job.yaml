@@ -38,12 +38,21 @@ jobs:
         run: |
           docker run -d -p 8080:8080 --name spring-test spring-backend-test
 
-      # 6️⃣ Wait for app to be ready and test /fib endpoint
+      # 6️⃣ Debug: check container status and logs
+      - name: Check running containers
+        run: docker ps
+
+      - name: Wait for Spring Boot to start
+        run: |
+          echo "Waiting 10s for Spring Boot startup..."
+          sleep 10
+          docker logs spring-test
+
+      # 7️⃣ Test /fib endpoint with retries
       - name: Test /fib endpoint
         run: |
           for i in {1..60}; do
-            result=$(curl -s http://localhost:8080/fib?length=10)
-            # Check if response contains "0" to confirm Fibonacci
+            result=$(curl -s http://127.0.0.1:8080/fib?length=10)
             if [[ "$result" == *0* ]]; then
               echo "✅ Fibonacci result: $result"
               exit 0
@@ -56,7 +65,7 @@ jobs:
           docker logs spring-test
           exit 1
 
-      # 7️⃣ Stop the container to clean up
+      # 8️⃣ Stop the container to clean up
       - name: Stop container
         if: always()
         run: |
